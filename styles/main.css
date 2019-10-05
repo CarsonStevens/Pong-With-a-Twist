@@ -1,0 +1,196 @@
+:root {
+  --primary-color: #1a3e59;
+  --secondary-color: #5c94bd;
+  --font-color: #FFCCFF;
+  --bg-color: #5c94bd;
+  --heading-color: #FFCCFF;
+  --footer-color: #FFCCFF;
+}
+
+[data-theme="dark"] {
+  --primary-color: #003333;
+  --secondary-color: #993300;
+  --font-color: #993300;
+  --bg-color: #330000;
+  --heading-color: #003333;
+  --footer-color: #003333;
+}
+
+/* For Theme Slider*/
+/*Simple css to style it like a toggle switch*/
+.theme-switch-wrapper {
+  position: relative;
+  float: right;
+  margin: 0.5rem 30vh 0.1rem 1vh;
+  color: var(--font-color);
+  align-items: center;
+  opacity: 1;
+}
+.theme-switch-wrapper em {
+  font-size: 1rem;
+  display: inline-block;
+  margin-right: 15vh;
+  padding: 0.25rem 0rem 0.1rem 3.5rem;
+  text-align: center;
+  color: var(--font-color);
+  font-family: 'Audiowide', cursive;
+  font-weight: 400;
+}
+.theme-switch {
+  display: inline-block;
+  height: 34px;
+  position: relative;
+  width: 60px;
+}
+.theme-switch input {
+  display:none;
+}
+.slider {
+  background-color: var(--font-color);
+  bottom: 0;
+  cursor: pointer;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  transition: .4s;
+}
+.slider:before {
+  background-color: var(--primary-color);
+  bottom: 4px;
+  content: "";
+  height: 26px;
+  left: 4px;
+  position: absolute;
+  transition: .4s;
+  width: 26px;
+}
+input:checked + .slider {
+  background-color: var(--secondary-color);
+}
+input:checked + .slider:before {
+  transform: translateX(26px);
+}
+.slider.round {
+  border-radius: 34px;
+}
+.slider.round:before {
+  border-radius: 50%;
+}
+
+
+body {
+  margin: 0px;
+  background-image: linear-gradient(var(--heading-color) 7vh, var(--bg-color) 12vh, var(--bg-color) 95vh, var(--footer-color) 100vh);
+  width: 100%;
+  height: 100vh;
+  color: var(--font-color);
+  font-family: 'Audiowide', cursive;
+  font-weight: 400;
+}
+
+header {
+  text-align: center;
+  color: var(--font-color);
+  font-family: 'Audiowide', cursive;
+  font-weight: 400;
+  height: 3rem;
+  min-height: 40px;
+  width: 100%;
+  opacity: 0.7;
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  background-color: var(--primary-color);
+  border-bottom: 2px var(--font-color);
+  text-shadow: 0.1rem 0.1rem black;
+}
+
+#game-title {
+  text-align: center;
+  font-size: 7vh;
+  padding: 0.1vh;
+  margin: 0px 0px 0px 12rem;
+  display:inline-block;
+  position: relative;
+  color: var(--font-color);
+  opacity: 1;
+}
+
+h2 {
+  text-align: center;
+  font-size: 1rem;
+  padding: 0.1vh;
+  position: relative;
+  color: var(--font-color);
+  border-bottom: 2px solid var(--font-color);
+  width: 100%;
+}
+
+#instructions {
+  width: 15%;
+  height: 91vh;
+  position: fixed;
+  top: 9vh;
+  left: 0px;
+  background-color: var(--primary-color);
+  opacity: 0.6;
+  border-right: 2px solid var(--font-color);
+  border-top: 3px solid var(--font-color);
+}
+
+#half-circle-instructions {
+  position:fixed;
+  margin-left: 15%;
+  left:0px;
+  margin-top: 30vh;
+  top: 0px;
+  width: 1.5rem;
+  height: 3rem;
+  border: 2px solid var(--primary-color);
+  border-bottom-right-radius: 2rem;
+  border-top-right-radius: 2rem;
+  z-index: 55;
+  background-color: #333333;
+  overflow: hidden;
+  opacity: 0.95;
+}
+
+#half-circle-instructions:hover {
+  box-shadow: 5px 0px 16px 0px rgba(0,0,0,0.5);
+  cursor: pointer;
+}
+
+#side-arrow-instructions {
+  position: relative;
+  top: 30%;
+  left: 25%;
+  color: var(--secondary-color);
+  font-size: 1rem;
+  z-index: 56;
+}
+
+#scoreboard {
+  width: 15%;
+  height: 91vh;
+  position: fixed;
+  top: 9vh;
+  right: 0px;
+  background-color: var(--primary-color);
+  opacity: 0.6;
+  border-left: 2px solid var(--font-color);
+  border-top: 3px solid var(--font-color);
+}
+
+main {
+  text-align: center;
+  margin: 14vh auto;
+  height: 70vh;
+  width: 70%;
+}
+
+footer {
+  height: 10vh;
+  width: 100%;
+  background-color: var(--footer-color);
+}

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Pong With a Twist></title>
+    <link rel="stylesheet" href="styles/main.css"/>
+    <link href="https://fonts.googleapis.com/css?family=Audiowide&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Mono&display=swap" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://kit.fontawesome.com/746df76887.js" crossorigin="anonymous"></script>
+  </head>
+  <body>
+    <header>
+      <h1 id="game-title">Pong With a Twist</h1>
+      <section class="theme-switch-wrapper">
+        <label class="theme-switch" for="checkbox">
+            <em>Theme</em>
+            <input type="checkbox" id="checkbox" />
+            <span class="slider round"></span>
+        </label>
+      </section>
+    </header>
+    <aside id="instructions">
+      <h2>Instructions</h2>
+      <section id="half-circle-instructions">
+        <em id="side-arrow-instructions" class="fas fa-angle-double-down fa-rotate-90"></em>
+        <!-- <section id="circle-cover"></section> -->
+      </section>
+    </aside>
+    <aside id="scoreboard">
+      <h2>Score Board</h2>
+    </aside>
+    <main>
+      <canvas id="game-board" width="720px" height="480px" style="border:2px solid var(--font-color);"></canvas>
+    </main>
+    <!-- <footer>
+
+    </footer> -->
+  </body>
+  <script type="text/javascript" src="darktoggle.js"></script>
+  <script type="text/javascript" src="javascript/styling.js"></script>
+</html>
