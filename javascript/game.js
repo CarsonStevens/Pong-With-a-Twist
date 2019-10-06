@@ -19,7 +19,7 @@ var ballStartX = document.getElementById("game-board").width/2;
 var ballStartY = document.getElementById("game-board").height/2;
 var ballMaxStartSpeed = 2;
 var ballMaxSpeed = 2;
-var ballColor = "blue";
+var ballColor = "white";
 var ballRadius = 10;
 var ballSpeedMultiplier = 1;
 var ballHitMultiplier = 1;
@@ -95,8 +95,14 @@ function Paddle(color, x, y) {
 
   this.update = function(){
     ctx = myGameArea.context;
+    ctx.rect(this.x, this.y, this.width, this.height);
     ctx.fillStyle = paddleColor;
-    ctx.fillRect(this.x, this.y, this.width, this.height);
+    ctx.shadowColor = 'black';
+    ctx.shadowBlur = 3;
+    ctx.shadowOffsetX = 1;
+    ctx.shadowOffsetY = 0;
+    ctx.fill();
+
   }
 
   this.newPos = function() {
@@ -130,9 +136,6 @@ function Ball(){
     this.speedY = randomIntFromInterval(-ballMaxStartSpeed,ballMaxStartSpeed);
     this.radius = ballRadius;
     resetting = false;
-    console.log("ball reset");
-    this.update;
-    // TODO: Set a timeout interval for reset time
   }
 
   this.update = function(){
@@ -141,12 +144,21 @@ function Ball(){
     var step = (Math.PI/2)/this.radius;
     for(var i = 0; i < (Math.PI/2); i += step){
       var c = "" + Math.floor(Math.max(0,255 * Math.abs(Math.cos(i))));
-      grd.addColorStop(i/(Math.PI/2),"rgba(" + c + "," + c + "," + c + "," + "1)");
+      var gradientSphereColor = "rgba(" + c + "," + c + "," + c + "," + "0.8)";
+      c// onsole.log(gradientSphereColor);
+      grd.addColorStop(i/(Math.PI/2), gradientSphereColor);
     }
+    ctx.globalCompositeOperation = "lighter";
+    ctx.fillStyle = grd;
     ctx.beginPath();
     ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2);
-    ctx.fill();
     ctx.closePath();
+
+    ctx.shadowColor = "black";
+    ctx.shadowBlur = 1;
+    ctx.shadowOffsetX = 0.1;
+    ctx.shadowOffsetY = 0.1;
+    ctx.fill();
   }
 
   this.collision = function(baricade){
@@ -154,17 +166,19 @@ function Ball(){
     var distY = Math.abs(this.y - baricade.y - baricade.height / 2);
 
     if (distX > (baricade.width / 2 + this.radius)) {
-       return false;
+      return false;
     }
     if (distY > (baricade.height / 2 + this.radius)) {
       return false;
     }
 
     if (distX <= (baricade.width / 2)) {
+      this.speedX *= -1;
       return true;
     }
     if (distY <= (baricade.height / 2)) {
-       return true;
+      this.speedY *= -1;
+      return true;
      }
 
     // also test for corner collisions
@@ -174,12 +188,12 @@ function Ball(){
   }
   this.newPos = function() {
     // Check top/bottom collision
-    if (this.y + this.speedY + this.radius < 0 || this.y + this.speedY + this.radius >= myGameArea.canvas.height) {
+    if (this.y + this.speedY - this.radius < 0 || this.y + this.speedY + this.radius >= myGameArea.canvas.height) {
       this.speedY *= -1;
     }
 
     // Check for a goal
-    if (this.x + this.radius + this.speedX > myGameArea.canvas.width) {
+    if (this.x + this.speedX > myGameArea.canvas.width) {
       // console.log("You scored!");
       resetting = true;
       score += 1;
@@ -188,7 +202,7 @@ function Ball(){
 
     }
     //Check for life lsot
-    if (this.x - this.radius + this.speedX < 0) {
+    if (this.x + this.speedX < 0) {
       resetting = true;
       lives -= 1;
       setTimeout(resetBall, scoreResetInterval);
@@ -205,7 +219,7 @@ function Ball(){
     }
 
     // TODO: Check for Paddle collision
-    // this.collision(paddle);
+    this.collision(paddle);
     // ballHitMultiplier += 0.05;
 
     //TODO: Make sure that ball speedX is never 0
