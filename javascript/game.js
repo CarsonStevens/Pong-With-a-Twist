@@ -5,8 +5,20 @@ var paused = false;
 var scoreResetInterval = 750;
 var resetting = false;
 // Maximum Number of baricades allowed on the baord
-var maxBarricadeNumber = 10;
+var maxbaricadeNumber = 10;
+//Player Life count
+var lives = 3;
+// For game over
+var gameover = false;
 
+// Ball Stats
+var ball;
+var ballStartX = document.getElementById("game-board").width/2;
+var ballStartY = document.getElementById("game-board").height/2;
+var ballMaxStartSpeed = 5;
+var ballMaxSpeed = 30;
+var ballColor = "blue";
+var ballRadius = 10;
 
 //Paddle Stats
 var paddle;
@@ -23,11 +35,15 @@ var scrollY = window.scrollY;
 var baricades = [];
 var lowerXBound = 200;
 var upperXBound = document.getElementById("game-board").width - 200;
+var lowerXSpawnBound = document.getElementById("game-board").width/2 - 50;
+var upperXSpawnBound = document.getElementById("game-board").width/2 + 50;
 var lowerSpdBound = 1;
 var upperSpdBound = 10;
 
 // Stationary StationaryBaricade Stats
 var sBColor = "green";
+var stationaryBaricadeWidth = 10;
+var stationaryBaricadeHeight = 60;
 
 
 /*
@@ -41,6 +57,7 @@ Main game
 function startGame() {
   myGameArea.start();
   paddle = new Paddle(paddleColor, playerStartX, playerStartY);
+  ball = new Ball(ballRadius);
 }
 
 // Defines the Gameboard/KeyListeners
@@ -60,19 +77,20 @@ var myGameArea = {
 
 // Defines Player Paddle Specifications/Methods
 function Paddle(color, x, y) {
+
+  // Paddle Stat setup
   this.width = paddleWidth;
   this.height = paddleHeight;
   this.x = x;
   this.y = y;
   this.speedY = 0;
-  ctx = myGameArea.context;
-  ctx.fillStyle = color;
-  ctx.fillRect(this.x, this.y, this.width, this.height);
+
   this.update = function(){
     ctx = myGameArea.context;
-    ctx.fillStyle = color;
+    ctx.fillStyle = paddleColor;
     ctx.fillRect(this.x, this.y, this.width, this.height);
   }
+
   this.newPos = function() {
     if (this.y + this.speedY > 0 && this.y + this.speedY + paddle.height <
         myGameArea.canvas.height) {
@@ -88,21 +106,115 @@ function Paddle(color, x, y) {
       }
     }
   }
+
 }
 
-// Defines the method for creating Barricades of all types
+function Ball(){
+
+  // ball setup stats
+  this.x = document.getElementById("game-board").width/2;
+  this.y = document.getElementById("game-board").height/2;
+  this.speedX = randomIntFromInterval(-ballMaxStartSpeed,ballMaxStartSpeed);
+  this.speedY = randomIntFromInterval(-ballMaxStartSpeed,ballMaxStartSpeed);
+  this.radius = ballRadius;
+
+  this.update = function(){
+    ctx = myGameArea.context;
+    this.fillColour = ballColor;
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2);
+    ctx.fillStyle = this.fillColour;
+    ctx.fill();
+    ctx.closePath();
+  }
+
+  this.collision = function(baricade){
+    var distX = Math.abs(this.x - baricade.x - baricade.width / 2);
+    var distY = Math.abs(this.y - baricade.y - baricade.height / 2);
+
+    if (distX > (baricade.width / 2 + this.radius)) {
+       return false;
+    }
+    if (distY > (baricade.height / 2 + this.radius)) {
+      return false;
+    }
+
+    if (distX <= (baricade.width / 2)) {
+      return true;
+    }
+    if (distY <= (baricade.height / 2)) {
+       return true;
+     }
+
+    // also test for corner collisions
+    var dx = distX - baricade.width / 2;
+    var dy = distY - baricade.height / 2;
+    return (dx * dx + dy * dy <= (this.radius * this.radius));
+  }
+  this.newPos = function() {
+    // Check top/bottom collision
+    if (this.y + this.speedY + this.radius <= 0 || this.y + this.speedY + this.radius >= myGameArea.canvas.height) {
+      this.speedY *= -1;
+    }
+
+    // Check for a goal
+    if (this.x + this.radius + this.speedX > myGameArea.canvas.width) {
+      console.log("You scored!");
+      // TODO: Reset game
+    }
+    //Check for life lsot
+    if (this.x - this.radius + this.speedX < 0) {
+      console.log("You lost a life!");
+      lives -= 1;
+      // TOFO: Reset game
+    }
+
+    //Check collisions with barricades
+    var i = 0;
+    for(i = 0; i < baricades.length; i++){
+      this.collision(baricades[i]);
+      // TODO: Edit collision to return switch case for direction response
+      // TODO: Apply response to speedX and SpeedY
+    }
+
+    // Update Ball Position
+    this.x += this.speedX;
+    this.y += this.speedY;
+  }
+}
+
+// Defines the method for creating baricades of all types
 function StationaryBaricade(type) {
   this.width = stationaryBaricadeWidth;
   this.height = stationaryBaricadeHeight;
-  this.x = x;
-  this.y = y;
-  this.speedY = 0;
-  ctx = myGameArea.context;
-  ctx.fillStyle = sBColor;
-  ctx.fillRect(this.x, this.y, this.width, this.height);
+  this.x = -1;
+  this.y = -1;
+
+  // Determine Type to set speed
+  if (type == "stationary") {
+    this.speedY = 0;
+  } else if (type == "moving") {
+    this.speedY = randomIntFromInterval(-ballMaxStartSpeed,ballMaxStartSpeed);
+  }
+
+  // Determine a valid position to other baricades
+  while (this.x < lowerXBound || this.x > upperXBound) {
+    this.x = randomIntFromInterval(lowerXBound,upperXBound);
+    var j = 0;
+    var collisionPath = false;
+    for(j = 0; j < baricades.length; j++) {
+      if (this.x > baricades[j].x && this.x < baricades[j].x + baricades[j].width) {
+        collisionPath = true;
+      }
+    }
+    if (this.x > lowerXSpawnBound && this.x < upperXSpawnBound || collisionPath) {
+      continue;
+    }
+  }
+
   this.update = function() {
     ctx = myGameArea.context;
-    ctx.fillStyle = color;
+    ctx.fillStyle = sBColor;
     ctx.fillRect(this.x, this.y, this.width, this.height);
   }
   this.newPos = function() {
@@ -124,10 +236,22 @@ function StationaryBaricade(type) {
 
 // Function to update the board
 function updateGameArea() {
-  if (!paused && !resetting) {
+  if (lives == 0) {
+    gameover = true;
+    // Do game over stuff
+  }
+  if (!paused && !resetting && !gameover) {
+
+    //Update board
     myGameArea.clear();
+
+    // Update Paddle
     paddle.newPos();
     paddle.update();
+
+    // Update ball
+    ball.newPos();
+    ball.update();
   }
 }
 
@@ -164,146 +288,10 @@ function playerMoveDown() {
   }
 }
 
+// Random Interval Function
+function randomIntFromInterval(min,max){
+  return Math.floor(Math.random()*(max-min+1)+min);
+}
+
 // Start the main game
 startGame();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  /*
-
-  Queue.js
-
-  A function to represent a queue
-
-  Created by Kate Morley - http://code.iamkate.com/ - and released under the terms
-  of the CC0 1.0 Universal legal code:
-
-  http://creativecommons.org/publicdomain/zero/1.0/legalcode
-
-  */
-
-  /* Creates a new queue. A queue is a first-in-first-out (FIFO) data structure -
-   * items are added to the end of the queue and removed from the front.
-   */
-  function Queue(){
-
-    // initialise the queue and offset
-    var queue  = [];
-    var offset = 0;
-
-    // Returns the length of the queue.
-    this.getLength = function(){
-      return (queue.length - offset);
-    }
-
-    // Returns true if the queue is empty, and false otherwise.
-    this.isEmpty = function(){
-      return (queue.length == 0);
-    }
-
-    /* Enqueues the specified item. The parameter is:
-     *
-     * item - the item to enqueue
-     */
-
-
-     // Modified to only allow the maximum number of baricades.
-    this.enqueue = function(item){
-      if (queue.length + 1 < maxBarricadeNumber) {
-        queue.push(item);
-      }
-    }
-
-    /* Dequeues an item and returns it. If the queue is empty, the value
-     * 'undefined' is returned.
-     */
-    this.dequeue = function(){
-
-      // if the queue is empty, return immediately
-      if (queue.length == 0) return undefined;
-
-      // store the item at the front of the queue
-      var item = queue[offset];
-
-      // increment the offset and remove the free space if necessary
-      if (++ offset * 2 >= queue.length){
-        queue  = queue.slice(offset);
-        offset = 0;
-      }
-
-      // return the dequeued item
-      return item;
-
-    }
-
-    /* Returns the item at the front of the queue (without dequeuing it). If the
-     * queue is empty then undefined is returned.
-     */
-    this.peek = function(){
-      return (queue.length > 0 ? queue[offset] : undefined);
-    }
-
-  }
-
-
-    // // For mobile devices
-    // // function TouchListener(element) {
-    // //     this.touches = [];
-    // //     this.touchMoveListener = function(touch) {};
-    // //
-    // //     element.addEventListener("touchstart", (function(e) {
-    // //         e.preventDefault();
-    // //         for (var i = 0; i < e.changedTouches.length; i++) {
-    // //             var touch = e.changedTouches[i];
-    // //             this.touches[touch.identifier] = {x: touch.clientX, y: touch.clientY};
-    // //         }
-    // //     }).bind(this));
-    // //
-    // //     element.addEventListener("touchmove", (function(e) {
-    // //         e.preventDefault();
-    // //         for (var i = 0; i < e.changedTouches.length; i++) {
-    // //             var touch = e.changedTouches[i];
-    // //             var previousTouch = this.touches[touch.identifier];
-    // //             this.touches[touch.identifier] = {x: touch.clientX, y: touch.clientY};
-    // //
-    // //             var offset = {x: touch.clientX - previousTouch.x, y: touch.clientY - previousTouch.y}
-    // //             this.touchMoveListener({x: touch.clientX, y: touch.clientY, offset: offset});
-    // //         }
-    // //     }).bind(this));
-    // //
-    // //     element.addEventListener("touchend", (function(e) {
-    // //         e.preventDefault();
-    // //         for (var i = 0; i < e.changedTouches.length; i++) {
-    // //             delete this.touches[e.changedTouches[i].identifier];
-    // //         }
-    // //     }).bind(this));
-    // // }
-    //
