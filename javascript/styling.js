@@ -1,7 +1,6 @@
 
-var headingToggle = true;
+// General Game Variables
 var instructionsToggle = true;
-var scoreboardToggle = true;
 
 $(document).ready(function(){
   // Side screen toggling
@@ -22,4 +21,5 @@ $(document).ready(function(){
       instructionsToggle = true;
     }
   });
+
 });

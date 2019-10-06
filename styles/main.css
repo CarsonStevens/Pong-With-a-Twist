@@ -87,6 +87,7 @@ body {
   color: var(--font-color);
   font-family: 'Audiowide', cursive;
   font-weight: 400;
+  overflow: hidden;
 }
 
 header {
@@ -192,5 +193,8 @@ main {
 footer {
   height: 10vh;
   width: 100%;
-  background-color: var(--footer-color);
+}
+
+#game-board {
+  background-color: #353535;
 }
