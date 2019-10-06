@@ -2,12 +2,14 @@
 // For pausing the game
 var paused = false;
 // For resetting the board
-var scoreResetInterval = 750;
+var scoreResetInterval = 2000;
 var resetting = false;
 // Maximum Number of baricades allowed on the baord
 var maxbaricadeNumber = 10;
 //Player Life count
 var lives = 3;
+// Player score
+var score = 0;
 // For game over
 var gameover = false;
 
@@ -15,10 +17,12 @@ var gameover = false;
 var ball;
 var ballStartX = document.getElementById("game-board").width/2;
 var ballStartY = document.getElementById("game-board").height/2;
-var ballMaxStartSpeed = 5;
-var ballMaxSpeed = 30;
+var ballMaxStartSpeed = 2;
+var ballMaxSpeed = 2;
 var ballColor = "blue";
 var ballRadius = 10;
+var ballSpeedMultiplier = 1;
+var ballHitMultiplier = 1;
 
 //Paddle Stats
 var paddle;
@@ -44,6 +48,8 @@ var upperSpdBound = 10;
 var sBColor = "green";
 var stationaryBaricadeWidth = 10;
 var stationaryBaricadeHeight = 60;
+var movingBaricadeWidth = 10;
+var movingBaricadeHeight = 60;
 
 
 /*
@@ -59,6 +65,7 @@ function startGame() {
   paddle = new Paddle(paddleColor, playerStartX, playerStartY);
   ball = new Ball(ballRadius);
   ball.init();
+  ballHitMultiplier = 1;
 }
 
 // Defines the Gameboard/KeyListeners
@@ -116,18 +123,28 @@ function Ball(){
   this.init = function() {
     this.x = document.getElementById("game-board").width/2;
     this.y = document.getElementById("game-board").height/2;
-    this.speedX = randomIntFromInterval(-ballMaxStartSpeed,ballMaxStartSpeed);
+    this.speedX = randomIntFromInterval(-ballMaxStartSpeed, ballMaxStartSpeed);
+    while(this.speedX == 0) {
+        this.speedX = randomIntFromInterval(-ballMaxStartSpeed, ballMaxStartSpeed);
+    }
     this.speedY = randomIntFromInterval(-ballMaxStartSpeed,ballMaxStartSpeed);
     this.radius = ballRadius;
+    resetting = false;
+    console.log("ball reset");
+    this.update;
     // TODO: Set a timeout interval for reset time
   }
 
   this.update = function(){
     ctx = myGameArea.context;
-    this.fillColour = ballColor;
+    var grd = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.radius);
+    var step = (Math.PI/2)/this.radius;
+    for(var i = 0; i < (Math.PI/2); i += step){
+      var c = "" + Math.floor(Math.max(0,255 * Math.abs(Math.cos(i))));
+      grd.addColorStop(i/(Math.PI/2),"rgba(" + c + "," + c + "," + c + "," + "1)");
+    }
     ctx.beginPath();
     ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2);
-    ctx.fillStyle = this.fillColour;
     ctx.fill();
     ctx.closePath();
   }
@@ -163,15 +180,19 @@ function Ball(){
 
     // Check for a goal
     if (this.x + this.radius + this.speedX > myGameArea.canvas.width) {
-      console.log("You scored!");
+      // console.log("You scored!");
+      resetting = true;
+      score += 1;
+      setTimeout(resetBall, scoreResetInterval);
       // TODO: Add/Remove New/Old Baricade
-      // TODO: Reset game
+
     }
     //Check for life lsot
     if (this.x - this.radius + this.speedX < 0) {
-      console.log("You lost a life!");
+      resetting = true;
       lives -= 1;
-      this.init();
+      setTimeout(resetBall, scoreResetInterval);
+
       // TOFO: Reset game
     }
 
@@ -185,30 +206,40 @@ function Ball(){
 
     // TODO: Check for Paddle collision
     // this.collision(paddle);
+    // ballHitMultiplier += 0.05;
 
     //TODO: Make sure that ball speedX is never 0
     // Update Ball Position
-    this.x += this.speedX;
-    this.y += this.speedY;
+    this.x += (this.speedX) * ballHitMultiplier * ballSpeedMultiplier;
+    this.y += this.speedY * ballHitMultiplier * ballSpeedMultiplier;
   }
 
-  this.reset = function() {
-
-  }
 }
 
 // Defines the method for creating baricades of all types
-function StationaryBaricade(type) {
-  this.width = stationaryBaricadeWidth;
-  this.height = stationaryBaricadeHeight;
+function Baricade() {
   this.x = -1;
   this.y = -1;
 
-  // Determine Type to set speed
-  if (type == "stationary") {
-    this.speedY = 0;
-  } else if (type == "moving") {
-    this.speedY = randomIntFromInterval(-ballMaxStartSpeed,ballMaxStartSpeed);
+  this.init = function() {
+    // For first 10 levels - Stationsary -
+    if (score <= 10) {
+      this.width = stationaryBaricadeWidth;
+      this.height = stationaryBaricadeHeight;
+    }
+
+    // For levels 10-20 = Moving =
+    else if (score > 10 && score <= 20) {
+      this.width = movingBaricadeWidth;
+      this.height = movingBaricadeHeight;
+    }
+
+    // Past level 20 - get increasingly harder
+    else if (score > 20) {
+      ballMaxSpeed += 1;
+      ballMaxStartSpeed += 1;
+      ballSpeedMultiplier += 0.1;
+    }
   }
 
   // Determine a valid position to other baricades
@@ -304,4 +335,8 @@ function randomIntFromInterval(min,max){
 }
 
 // Start the main game
+function resetBall() {
+  startGame();
+}
+
 startGame();
