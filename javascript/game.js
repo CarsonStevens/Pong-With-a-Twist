@@ -58,6 +58,7 @@ function startGame() {
   myGameArea.start();
   paddle = new Paddle(paddleColor, playerStartX, playerStartY);
   ball = new Ball(ballRadius);
+  ball.init();
 }
 
 // Defines the Gameboard/KeyListeners
@@ -112,11 +113,14 @@ function Paddle(color, x, y) {
 function Ball(){
 
   // ball setup stats
-  this.x = document.getElementById("game-board").width/2;
-  this.y = document.getElementById("game-board").height/2;
-  this.speedX = randomIntFromInterval(-ballMaxStartSpeed,ballMaxStartSpeed);
-  this.speedY = randomIntFromInterval(-ballMaxStartSpeed,ballMaxStartSpeed);
-  this.radius = ballRadius;
+  this.init = function() {
+    this.x = document.getElementById("game-board").width/2;
+    this.y = document.getElementById("game-board").height/2;
+    this.speedX = randomIntFromInterval(-ballMaxStartSpeed,ballMaxStartSpeed);
+    this.speedY = randomIntFromInterval(-ballMaxStartSpeed,ballMaxStartSpeed);
+    this.radius = ballRadius;
+    // TODO: Set a timeout interval for reset time
+  }
 
   this.update = function(){
     ctx = myGameArea.context;
@@ -153,19 +157,21 @@ function Ball(){
   }
   this.newPos = function() {
     // Check top/bottom collision
-    if (this.y + this.speedY + this.radius <= 0 || this.y + this.speedY + this.radius >= myGameArea.canvas.height) {
+    if (this.y + this.speedY + this.radius < 0 || this.y + this.speedY + this.radius >= myGameArea.canvas.height) {
       this.speedY *= -1;
     }
 
     // Check for a goal
     if (this.x + this.radius + this.speedX > myGameArea.canvas.width) {
       console.log("You scored!");
+      // TODO: Add/Remove New/Old Baricade
       // TODO: Reset game
     }
     //Check for life lsot
     if (this.x - this.radius + this.speedX < 0) {
       console.log("You lost a life!");
       lives -= 1;
+      this.init();
       // TOFO: Reset game
     }
 
@@ -177,9 +183,17 @@ function Ball(){
       // TODO: Apply response to speedX and SpeedY
     }
 
+    // TODO: Check for Paddle collision
+    // this.collision(paddle);
+
+    //TODO: Make sure that ball speedX is never 0
     // Update Ball Position
     this.x += this.speedX;
     this.y += this.speedY;
+  }
+
+  this.reset = function() {
+
   }
 }
 
@@ -217,19 +231,13 @@ function StationaryBaricade(type) {
     ctx.fillStyle = sBColor;
     ctx.fillRect(this.x, this.y, this.width, this.height);
   }
+
+  // Update Baricade Position
   this.newPos = function() {
-    if (this.y + this.speedY > 0 && this.y + this.speedY + paddle.height <
+    if (this.y + this.speedY < 0 || this.y + this.speedY + this.height <
        myGameArea.canvas.height) {
+      this.speedY *= -1;
       this.y += this.speedY;
-    } else {
-      if (this.y + this.speedY < 0) {
-        this.y = 0;
-        this.speedY = 0;
-      } else if (this.y + this.speedY + paddle.height >
-                 myGameArea.canvas.height){
-        this.y = myGameArea.canvas.height - paddle.height;
-        this.speedY = 0;
-      }
     }
   }
 }
@@ -252,6 +260,8 @@ function updateGameArea() {
     // Update ball
     ball.newPos();
     ball.update();
+
+    // TODO: Update each baricade position in baricades
   }
 }
 
