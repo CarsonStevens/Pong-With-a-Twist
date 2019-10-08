@@ -1,0 +1,30 @@
+
+#hightable,#myhightable{
+    width:50%;
+    margin:auto;
+    margin-top:8px;
+    text-align: center;
+}
+
+#hightable td,#myhightable td{
+    border: 1px black solid;
+}
+
+#highlogo{
+    width: 300px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#highdiv{
+  width: 15%;
+  height: 91vh;
+  position: fixed;
+  top: 9vh;
+  right: 0px;
+  background-color: var(--primary-color);
+  opacity: 0.6;
+  border-left: 2px solid var(--font-color);
+  border-top: 3px solid var(--font-color);
+}
