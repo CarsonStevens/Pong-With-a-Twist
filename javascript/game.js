@@ -1,6 +1,9 @@
 
 // For pausing the game
 var paused = false;
+$("#pause").click(function() {
+  paused = !paused;
+});
 // For resetting the board
 var scoreResetInterval = 1000;
 var resetting = false;
@@ -309,7 +312,7 @@ function Baricade() {
 function updateGameArea() {
   if (lives == 0) {
     gameover = true;
-	
+
 	if(gameover) {
 	highscore(score);
 	}
@@ -394,4 +397,3 @@ startGame();
 
 // Updates score for the highscore API
 update_score();
-
