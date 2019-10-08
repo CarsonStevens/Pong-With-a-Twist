@@ -1,6 +1,9 @@
 
 // For pausing the game
 var paused = false;
+$("#pause").click(function() {
+  paused = !paused;
+});
 // For resetting the board
 var scoreResetInterval = 1000;
 var resetting = false;
@@ -168,33 +171,71 @@ function Ball(){
   }
 
   this.collision = function(baricade){
-    var distX = Math.abs(this.x+this.radius - baricade.x);
-    var distY = Math.abs(this.y+this.radius - baricade.y);
+    var baricadeRangeLow = baricade.x;
+    var baricadeRangeHigh = baricade.x + baricade.width;
+    var baricadeRangeTop = baricade.y;
+    var baricadeRangeBottom = baricade.y + baricade.height;
 
-    if (distX > (baricade.width/2)) {
-      return false;
-    }
-    if (distY > (baricade.height/2)) {
-      return false;
-    }
-
-    if (distX - this.radius <= (baricade.width)) {
-      this.speedX *= -1;
-      return true;
-    }
-    if (distY -this.radius <= (baricade.height)) {
+    // Passing the baricade horizontally
+    //For top collision
+    if(this.x >baricadeRangeLow &&
+        this.x < baricadeRangeHigh && this.y+this.radius > baricadeRangeTop && this.y-this.radius < baricadeRangeBottom) {
       this.speedY *= -1;
-      return true;
-     }
-
-    // also test for corner collisions
-    var dx = distX - baricade.width / 2;
-    var dy = distY - baricade.height / 2;
-    if(dx * dx + dy * dy <= (this.radius * this.radius)) {
-      this.speedX *= -1;
+      this.y += Math.sign(this.speedY)*this.radius;
       return true;
     }
+
+    //For bottom collision
+    if(this.x >baricadeRangeLow &&
+        this.x < baricadeRangeHigh && this.y+this.radius < baricadeRangeBottom && this.y-this.radius > baricadeRangeTop) {
+      this.speedY *= -1;
+      this.y += Math.sign(this.speedY)*this.radius;
+      return true;
+    }
+    // For left Collision
+    if(this.y > baricadeRangeTop &&
+        this.y < baricadeRangeBottom && this.x+this.radius >baricadeRangeLow && this.x+this.radius < baricadeRangeHigh) {
+      this.speedX *= -1;
+      this.x += Math.sign(this.speedX)*this.radius;
+      return true;
+    }
+    // For RIght Collision
+    if(this.y > baricadeRangeTop &&
+        this.y < baricadeRangeBottom && this.x-this.radius  < baricadeRangeHigh && this.x-this.radius > baricadeRangeLow) {
+      this.speedX *= -1;
+      this.x += Math.sign(this.speedX)*this.radius;
+      return true;
+    }
+
+    return false;
   }
+
+    // var distX = Math.abs(this.x+this.radius - baricade.x);
+    // var distY = Math.abs(this.y+this.radius - baricade.y);
+    //
+    // if (distX > (baricade.width/2)) {
+    //   return false;
+    // }
+    // if (distY > (baricade.height/2)) {
+    //   return false;
+    // }
+    //
+    // if (distX - this.radius <= (baricade.width)) {
+    //   this.speedX *= -1;
+    //   return true;
+    // }
+    // if (distY -this.radius <= (baricade.height)) {
+    //   this.speedY *= -1;
+    //   return true;
+    //  }
+    //
+    // // also test for corner collisions
+    // var dx = distX - baricade.width / 2;
+    // var dy = distY - baricade.height / 2;
+    // if(dx * dx + dy * dy <= (this.radius * this.radius)) {
+    //   this.speedX *= -1;
+    //   return true;
+    // }
   this.newPos = function() {
 
     // Check top/bottom collision
@@ -234,7 +275,7 @@ function Ball(){
 
     baricades.forEach(function(baricade) {
       ball.collision(baricade);
-    })
+    });
 
     // Update Ball Position
     this.x += (this.speedX) * ballHitMultiplier * ballSpeedMultiplier;
@@ -309,7 +350,7 @@ function Baricade() {
 function updateGameArea() {
   if (lives == 0) {
     gameover = true;
-	
+
 	if(gameover) {
 	highscore(score);
 	}
@@ -394,4 +435,3 @@ startGame();
 
 // Updates score for the highscore API
 update_score();
-

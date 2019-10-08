@@ -27,31 +27,24 @@
       <h2>Instructions</h2>
       <section id="half-circle-instructions">
         <em id="side-arrow-instructions" class="fas fa-angle-double-down fa-rotate-90"></em>
-        <!-- <section id="circle-cover"></section> -->
       </section>
     </aside>
-<!--    <aside id="scoreboard">  
-      <h2>Score Board</h2>    -->
-	  
-	  <div id="highdiv">
-			<table id="hightable">
-				<tr>
-					<th>User</th>
-					<th>Score</th>
-				</tr>
+   <aside id="scoreboard">
+      <h2>Score Board</h2>
+  	  <section id="highdiv">
+  			<table id="myhightable">
+          <tr>
+            <th>User</th>
+            <th>Score</th>
+          </tr>
+  				<tr id="myhighscore">
+  					<td>Your High Score</th>
+            <td>You don't have one yet!</td>
+  				</tr>
+  			</table>
+  		</section>
 
-			</table>
-			<table id="myhightable">
-				<tr>
-					<th colspan="2">Your High Score</th>
-				</tr>
-				<tr id="myhighscore">
-					<td colspan="2">You don't have one yet!</td>
-				</tr>
-			</table>
-		</div>
-	  <!--
-    </aside> -->
+    </aside>
     <main>
       <section id="score"></section>
       <section id="lives">
@@ -59,6 +52,7 @@
         <img id="life2" class="life" src="images/life.png" alt="player life 2">
         <img id="life3" class="life" src="images/life.png" alt="player life 3">
       </section>
+      <section id="pause">Pause</section>
       <!-- <section id="pause-btn">Pause</section> -->
       <canvas id="game-board" width="720px" height="480px" style="border:2px solid var(--font-color);">Couldn't Display Canvas. Upgrade Browser</canvas>
     </main>
