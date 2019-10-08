@@ -131,7 +131,7 @@ function Ball(){
     this.x = document.getElementById("game-board").width/2;
     this.y = document.getElementById("game-board").height/2;
 
-    // Make suer that ball is never moving orthogonally to screen
+    // Make sure that ball is never moving orthogonally to screen
     this.speedX = randomIntFromInterval(-ballMaxStartSpeed, ballMaxStartSpeed);
     while(this.speedX == 0) {
         this.speedX = randomIntFromInterval(-ballMaxStartSpeed, ballMaxStartSpeed);
@@ -309,6 +309,11 @@ function Baricade() {
 function updateGameArea() {
   if (lives == 0) {
     gameover = true;
+	
+	if(gameover) {
+	highscore(score);
+	}
+	gameover = false;
     // Do game over stuff
   }
 
@@ -386,3 +391,7 @@ function resetBall() {
 }
 
 startGame();
+
+// Updates score for the highscore API
+update_score();
+

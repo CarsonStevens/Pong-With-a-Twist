@@ -5,10 +5,12 @@
     <meta charset="utf-8">
     <title>Pong With a Twist></title>
     <link rel="stylesheet" href="styles/main.css"/>
+	<link rel="stylesheet" href="highscore.css">
     <link href="https://fonts.googleapis.com/css?family=Audiowide&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Roboto+Mono&display=swap" rel="stylesheet">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://kit.fontawesome.com/746df76887.js" crossorigin="anonymous"></script>
+	<script type="text/javascript" src="HighscoreAPI.js"></script>
   </head>
   <body>
     <header>
@@ -28,9 +30,28 @@
         <!-- <section id="circle-cover"></section> -->
       </section>
     </aside>
-    <aside id="scoreboard">
-      <h2>Score Board</h2>
-    </aside>
+<!--    <aside id="scoreboard">  
+      <h2>Score Board</h2>    -->
+	  
+	  <div id="highdiv">
+			<table id="hightable">
+				<tr>
+					<th>User</th>
+					<th>Score</th>
+				</tr>
+
+			</table>
+			<table id="myhightable">
+				<tr>
+					<th colspan="2">Your High Score</th>
+				</tr>
+				<tr id="myhighscore">
+					<td colspan="2">You don't have one yet!</td>
+				</tr>
+			</table>
+		</div>
+	  <!--
+    </aside> -->
     <main>
       <section id="score"></section>
       <section id="lives">
