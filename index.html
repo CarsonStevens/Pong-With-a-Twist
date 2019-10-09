@@ -25,6 +25,14 @@
     </header>
     <aside id="instructions">
       <h2>Instructions</h2>
+      <article id="controls">
+        To score points, use the paddle to hit the ball to the other side of the arena. Move the paddle using the <img class="arrow-key" src="images/uparrow.png" alt="up arrow"/> to move it upward and the <img src="images/downarrow.png" alt="down arrow" class="arrow-key"/> to move it downward.
+      </article>
+      <section id="color">
+        <h2>Choose a Paddle and Ball Color</h2>
+        <input type="color" id="paddle-color" name="paddle-color" value="white" onchange="changePaddleColor(this)">
+        <label for="paddle-color">Color</label>
+      </section>
       <section id="half-circle-instructions">
         <em id="side-arrow-instructions" class="fas fa-angle-double-down fa-rotate-90"></em>
       </section>
@@ -38,22 +46,22 @@
             <th>Score</th>
           </tr>
   				<tr id="myhighscore">
-  					<td>Your High Score</th>
+  					<td>Your High Score</td>
             <td>You don't have one yet!</td>
   				</tr>
   			</table>
   		</section>
-
     </aside>
     <main>
-      <section id="score"></section>
-      <section id="lives">
-        <img id="life1" class="life" src="images/life.png" alt="player life 1">
-        <img id="life2" class="life" src="images/life.png" alt="player life 2">
-        <img id="life3" class="life" src="images/life.png" alt="player life 3">
+      <section id="display">
+        <section id="score"></section>
+        <section id="lives">
+          <img id="life1" class="life" src="images/life.png" alt="player life 1">
+          <img id="life2" class="life" src="images/life.png" alt="player life 2">
+          <img id="life3" class="life" src="images/life.png" alt="player life 3">
+        </section>
+        <section id="pause">Pause</section>
       </section>
-      <section id="pause">Pause</section>
-      <!-- <section id="pause-btn">Pause</section> -->
       <canvas id="game-board" width="720px" height="480px" style="border:2px solid var(--font-color);">Couldn't Display Canvas. Upgrade Browser</canvas>
     </main>
     <!-- <footer>

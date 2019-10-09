@@ -8,7 +8,7 @@ $("#pause").click(function() {
 var scoreResetInterval = 1000;
 var resetting = false;
 // Maximum Number of baricades allowed on the baord
-var maxbaricadeNumber = 2;
+var maxbaricadeNumber = 7;
 //Player Life count
 var lives = 3;
 // Player score
@@ -20,17 +20,17 @@ var gameover = false;
 var ball;
 var ballStartX = document.getElementById("game-board").width/2;
 var ballStartY = document.getElementById("game-board").height/2;
-var ballMaxStartSpeed = 3;
+var ballMaxStartSpeed = 2;
 var ballMaxSpeed = 3;
 var ballColor = "white";
 var ballRadius = 10;
-var ballSpeedMultiplier = 1;
+var ballSpeedMultiplier = 1.05;
 var ballHitMultiplier = 1;
 
 //Paddle Stats
 var paddle;
-var playerSpeed = 1;
-var playerMaxSpeed = 10;
+var playerSpeed = 2;
+var playerMaxSpeed = 17;
 var playerStartX = 30;
 var playerStartY = document.getElementById("game-board").height/2;
 var paddleColor = "red";
@@ -40,13 +40,13 @@ var scrollY = window.scrollY;
 
 //BaricadeStats
 var baricades = [];
-var lowerXBound = 200;
-var upperXBound = document.getElementById("game-board").width - 200;
+var lowerXBound = 100;
+var upperXBound = document.getElementById("game-board").width - 100;
 var lowerXSpawnBound = document.getElementById("game-board").width/2 - 50;
 var upperXSpawnBound = document.getElementById("game-board").width/2 + 50;
 var lowerSpdBound = 1;
-var upperSpdBound = 10;
-var baricadeMinSpawnSpacing = 30;
+var upperSpdBound = 5;
+var baricadeMinSpawnSpacing = 40;
 
 // Stationary StationaryBaricade Stats
 var sBColor = "white";
@@ -99,6 +99,7 @@ function Paddle(color, x, y) {
 
   this.update = function(){
     ctx = myGameArea.context;
+    ctx.globalCompositeOperation = "copy";
     ctx.rect(this.x, this.y, this.width, this.height);
     ctx.fillStyle = paddleColor;
     ctx.shadowColor = 'black';
@@ -149,15 +150,15 @@ function Ball(){
 
   this.update = function(){
     ctx = myGameArea.context;
+    ctx.globalCompositeOperation = "lighter";
     var grd = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.radius);
     var step = (Math.PI/2)/this.radius;
     for(var i = 0; i < (Math.PI/2); i += step){
       var c = "" + Math.floor(Math.max(0,255 * Math.abs(Math.cos(i))));
-      var gradientSphereColor = "rgba(" + c + "," + c + "," + c + "," + "0.8)";
+      var gradientSphereColor = "rgba(" + c + "," + c + "," + c + "," + "0.85)";
       // onsole.log(gradientSphereColor);
       grd.addColorStop(i/(Math.PI/2), gradientSphereColor);
     }
-    ctx.globalCompositeOperation = "lighter";
     ctx.fillStyle = grd;
     ctx.beginPath();
     ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2);
@@ -210,32 +211,6 @@ function Ball(){
     return false;
   }
 
-    // var distX = Math.abs(this.x+this.radius - baricade.x);
-    // var distY = Math.abs(this.y+this.radius - baricade.y);
-    //
-    // if (distX > (baricade.width/2)) {
-    //   return false;
-    // }
-    // if (distY > (baricade.height/2)) {
-    //   return false;
-    // }
-    //
-    // if (distX - this.radius <= (baricade.width)) {
-    //   this.speedX *= -1;
-    //   return true;
-    // }
-    // if (distY -this.radius <= (baricade.height)) {
-    //   this.speedY *= -1;
-    //   return true;
-    //  }
-    //
-    // // also test for corner collisions
-    // var dx = distX - baricade.width / 2;
-    // var dy = distY - baricade.height / 2;
-    // if(dx * dx + dy * dy <= (this.radius * this.radius)) {
-    //   this.speedX *= -1;
-    //   return true;
-    // }
   this.newPos = function() {
 
     // Check top/bottom collision
@@ -254,7 +229,7 @@ function Ball(){
       var newBaricade = new Baricade();
       newBaricade.init();
       baricades.unshift(newBaricade);
-      while (baricades.length > 10) {
+      while (baricades.length > maxbaricadeNumber) {
         baricades.pop();
       }
       console.log(baricades.length);
@@ -270,7 +245,7 @@ function Ball(){
 
     // Paddle collision
     if (this.collision(paddle)) {
-      ballHitMultiplier += 0.005;
+      ballHitMultiplier += 0.05;
     }
 
     baricades.forEach(function(baricade) {
@@ -288,25 +263,27 @@ function Ball(){
 function Baricade() {
 
   this.init = function() {
-    console.log(score);
     // For first 10 levels - Stationsary -
     if (score <= maxbaricadeNumber) {
       this.width = stationaryBaricadeWidth;
       this.height = stationaryBaricadeHeight;
+      this.speedY = 0;
     }
 
     // For levels 10-20 = Moving =
     else if (score > maxbaricadeNumber && score <= maxbaricadeNumber*2) {
       this.width = movingBaricadeWidth;
       this.height = movingBaricadeHeight;
+      this.speedY = randomIntFromInterval(lowerSpdBound, upperSpdBound);
     }
 
     // Past level 20 - get increasingly harder
     else if (score > maxbaricadeNumber*2) {
+      this.width = movingBaricadeWidth;
+      this.height = movingBaricadeHeight;
+      this.speedY = randomIntFromInterval(lowerSpdBound, upperSpdBound);
       ballMaxSpeed += 1;
       ballMaxStartSpeed += 1;
-      ballSpeedMultiplier += 0.01;
-      console.log(score);
     }
   }
 
@@ -338,23 +315,25 @@ function Baricade() {
   }
   // Update Baricade Position
   this.newPos = function() {
-    if (this.y + this.speedY < 0 || this.y + this.speedY + this.height <
+    if (this.y - this.speedY <= 0 || this.y + this.speedY + this.height >=
       myGameArea.canvas.height) {
       this.speedY *= -1;
-      this.y += this.speedY;
+      this.y += Math.sign(this.speedY)*10;
     }
+    this.y += this.speedY;
   }
 }
 
 // Function to update the board
 function updateGameArea() {
+
   if (lives == 0) {
     gameover = true;
 
-	if(gameover) {
-	highscore(score);
-	}
-	gameover = false;
+  	if(gameover) {
+  	highscore(score);
+  	}
+	  gameover = false;
     // Do game over stuff
   }
 
@@ -370,6 +349,16 @@ function updateGameArea() {
     paddle.update();
 
     // Update ball
+    if(ball.y+ball.radius < -1 || ball.y+ball.radius > myGameArea.canvas.height+1){
+      ball.init();
+      alert("Ball bounced out of arena");
+    }
+    if(ball.speedX > ballMaxSpeed) {
+      ball.speedX = ballMaxSpeed;
+    }
+    if(ball.speedY > ballMaxSpeed) {
+      ball.speedY = ballMaxSpeed;
+    }
     ball.newPos();
     ball.update();
 
@@ -430,6 +419,16 @@ function resetBall() {
   ball = new Ball(ballRadius);
   ball.init();
 }
+
+//FUnction to change paddle Color
+function changePaddleColor(color) {
+  $(document).ready(function(){
+    paddleColor = color.value;
+    console.log(paddleColor);
+    paddle.update();
+  });
+}
+
 
 startGame();
 
