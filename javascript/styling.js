@@ -12,9 +12,9 @@ $(document).ready(function(){
       $("#half-circle-instructions").animate({marginLeft:'0%'},300);
       $("#side-arrow-instructions").removeClass("fa-rotate-90");
       $("#side-arrow-instructions").addClass("fa-rotate-270");
-      var width = Math.round(window.screen.width * 0.8);
-      var height = Math.round(window.screen.height * 0.65);
-      $("#game-board").animate({right:'2%', width:width, height:height}, 600);
+      var width = Math.round(window.screen.width * 0.70);
+      var height = Math.round(window.screen.height * 0.70);
+      $("#game-board").animate({right:'2%', width:width, height:height, marginTop:'-2vh'}, 600);
       $("#lives, #pause, #score").animate({left:'1%'}, 600);
       instructionsToggle = false;
     } else {
@@ -24,7 +24,7 @@ $(document).ready(function(){
       $("#half-circle-instructions").animate({marginLeft:'15%'},500);
       $("#side-arrow-instructions").removeClass("fa-rotate-270");
       $("#side-arrow-instructions").addClass("fa-rotate-90");
-      $("#game-board").animate({right:'15%', width:'720', height:'480'}, 400);
+      $("#game-board").animate({right:'15%', width:'720', height:'480', marginTop:'0vh'}, 400);
       $("#lives, #pause, #score").animate({left:'15%'}, 400);
       instructionsToggle = true;
     }

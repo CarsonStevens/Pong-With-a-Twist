@@ -203,6 +203,7 @@ footer {
   opacity: 0.6;
   border-radius: 5px;
   margin: auto 1rem;
+  display: none;
 }
 
 #score {
@@ -239,6 +240,7 @@ footer {
   height: 1rem;
   width: auto;
   padding: 0rem 0.25rem;
+  opacity: 0.0;
 }
 
 #myhightable {
@@ -301,4 +303,25 @@ footer {
 
 #color {
   text-align: center;
+}
+
+#start, #gameover {
+  text-align: center;
+  background-color: var(--primary-color);
+  color: var(--font-color);
+  width: 50%;
+  font-size: 3rem;
+  display: none;
+  z-index: 1000;
+  margin-top: 50vh;
+  margin-left: auto;
+  margin-right: auto;
+  border: solid 2px var(--font-color);
+  border-radius: 1rem;
+  padding: 0.5rem 1rem;
+}
+
+#start {
+  display:block;
+  cursor: pointer;
 }
