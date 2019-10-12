@@ -26,7 +26,7 @@ var ballMaxStartSpeed = 2;
 var ballMaxSpeed = 3;
 var ballColor = "white";
 var ballRadius = 10;
-var ballSpeedMultiplier = 1.05;
+var ballSpeedMultiplier = 1.1;
 var ballHitMultiplier = 1;
 
 //Paddle Stats
@@ -105,8 +105,8 @@ function Paddle(color, x, y) {
 	ctx.rect(this.x, this.y, this.width, this.height);
 	ctx.fillStyle = paddleColor;
 	ctx.shadowColor = 'black';
-	ctx.shadowBlur = 3;
-	ctx.shadowOffsetX = 1;
+	ctx.shadowBlur = 10;
+	ctx.shadowOffsetX = 10;
 	ctx.shadowOffsetY = 0;
 	ctx.fill();
 
@@ -147,6 +147,7 @@ function Ball(){
 	}
 	this.radius = ballRadius;
 	resetting = false;
+	this.speedX += 0.5;
   }
 
   this.update = function(){
@@ -179,35 +180,34 @@ function Ball(){
 		// Defines the edges of the baricades
 		var baricadeRangeLow = baricade.x;
 		var baricadeRangeHigh = baricade.x + baricade.width;
-		var baricadeRangeTop = baricade.y;
-		var baricadeRangeBottom = baricade.y + baricade.height;
+		var baricadeRangeTop = baricade.y + baricade.speedY;
+		var baricadeRangeBottom = baricade.y + baricade.height + baricade.speedY;
 
 		// Passing the baricade horizontally
 		//For top collision
-		if(this.x >baricadeRangeLow &&
-			this.x < baricadeRangeHigh && this.y+this.radius > baricadeRangeTop && this.y-this.radius < baricadeRangeBottom) {
+		if(this.x + this.speedX > baricadeRangeLow &&
+			this.x + this.speedX < baricadeRangeHigh && this.y + this.radius +  this.speedY > baricadeRangeTop && this.y - this.radius + this.speedY < baricadeRangeBottom) {
 		  this.speedY *= -1;
 		  this.y += Math.sign(this.speedY)*this.radius;
 		  return true;
 		}
 
 		//For bottom collision
-		if(this.x >baricadeRangeLow &&
-			this.x < baricadeRangeHigh && this.y+this.radius < baricadeRangeBottom && this.y-this.radius > baricadeRangeTop) {
+		if(this.x + this.speedX > baricadeRangeLow &&
+			this.x + this.speedX < baricadeRangeHigh && this.y + this.radius + this.speedY < baricadeRangeBottom && this.y - this.radius + this.speedY > baricadeRangeTop) {
 		  this.speedY *= -1;
 		  this.y += Math.sign(this.speedY)*this.radius;
 		  return true;
 		}
 		// For left Collision
-		if(this.y > baricadeRangeTop && this.y < baricadeRangeBottom &&
-				this.x+this.radius >baricadeRangeLow && this.x+this.radius < baricadeRangeHigh) {
+		if(this.y + this.speedY > baricadeRangeTop && this.y + this.speedY < baricadeRangeBottom && this.x + this.radius + this.speedX > baricadeRangeLow && this.x + this.radius + this.speedX < baricadeRangeHigh){
 		  this.speedX *= -1;
 		  this.x += Math.sign(this.speedX)*this.radius;
 		  return true;
 		}
 		// For RIght Collision
-		if(this.y + baricade.speedY > baricadeRangeTop &&
-			this.y < baricadeRangeBottom && this.x-this.radius  < baricadeRangeHigh && this.x-this.radius > baricadeRangeLow) {
+		if(this.y + this.speedY > baricadeRangeTop &&
+			this.y + this.speedY < baricadeRangeBottom && this.x - this.radius + this.speedX < baricadeRangeHigh && this.x - this.radius + this.speedX > baricadeRangeLow) {
 		  this.speedX *= -1;
 		  this.x += Math.sign(this.speedX)*this.radius;
 		  return true;
